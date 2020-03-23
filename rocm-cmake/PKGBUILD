@@ -6,7 +6,7 @@ pkgname=rocm-cmake
 pkgver=3.7.0
 pkgrel=1
 pkgdesc='CMake modules for common build tasks needed for the ROCm software stack'
-arch=('x86_64')
+arch=('any')
 url='https://github.com/RadeonOpenCompute/rocm-cmake'
 license=('MIT')
 makedepends=('cmake')
@@ -20,6 +20,5 @@ build() {
 
 package() {
   make DESTDIR="$pkgdir" install
-
   install -Dm644 "$_dirname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

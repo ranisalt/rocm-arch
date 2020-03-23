@@ -1,0 +1,59 @@
+name: Arch Linux Package CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
+    steps:
+    - uses: actions/checkout@v2
+    - run: pacman -Syuq base-devel ccache fd namcap python --needed --noconfirm
+    - name: Setup makepkg
+      run: |
+        useradd -M builduser && chown -R builduser .
+        echo "builduser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builduser
+        sed -i -e 's/!ccache/ccache/' -e 's/!color/color/' /etc/makepkg.conf
+        echo 'CFLAGS="-march=x86-64 -mtune=generic -O3 -pipe -fno-plt -fomit-frame-pointer -fstack-protector-strong --param=ssp-buffer-size=4 -ffunction-sections -fdata-sections"' >> /etc/makepkg.conf
+        echo 'CXXFLAGS="$CFLAGS"' >> /etc/makepkg.conf
+        echo 'LDFLAGS="-Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now,--gc-sections"' >> /etc/makepkg.conf
+        echo "PKGDEST=$PWD" >> /etc/makepkg.conf
+        echo 'PKGEXT=".pkg.tar.zst"' >> /etc/makepkg.conf
+        echo "MAKEFLAGS='-j$(nproc)'" >> /etc/makepkg.conf
+        echo '[rocm]' >> /etc/pacman.conf
+        echo "Server = file://$PWD" >> /etc/pacman.conf
+        echo "SigLevel = Never" >> /etc/pacman.conf
+        repo-add $PWD/rocm.db.tar.zst
+        echo "::set-env name=CCACHE_DIR::/tmp/ccache"
+    - uses: actions/cache@v1
+      with:
+        path: /tmp/ccache
+        key: ccache-${{ github.sha }}
+        restore-keys: |
+          ccache-
+    - run: sudo -Eu builduser ccache -z
+    - run: sh build.sh hsakmt-roct
+      continue-on-error: true
+    - run: sh build.sh hsa-rocr
+      continue-on-error: true
+    - run: sh build.sh llvm-roc
+      continue-on-error: true
+    - run: sh build.sh rocm-cmake
+      continue-on-error: true
+    - run: sh build.sh rocm-device-libs
+      continue-on-error: true
+    - run: sh build.sh rocm-comgr
+      continue-on-error: true
+    - run: sh build.sh rocm-opencl-runtime
+      continue-on-error: true
+    - run: sudo -Eu builduser ccache -s
+    - uses: actions/upload-artifact@v2-preview
+      with:
+        name: packages
+        path: ${{ github.workspace }}/*.pkg.tar.zst
+

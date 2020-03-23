@@ -6,11 +6,8 @@ pkgbase = hsa-rocr
 	arch = x86_64
 	license = custom:NCSAOSL
 	makedepends = cmake
-	makedepends = llvm-amdgpu
-	makedepends = xxd
-	depends = libelf
 	depends = hsakmt-roct
-	depends = rocm-device-libs
+	depends = libelf
 	provides = rocr-runtime=3.7.0
 	conflicts = rocr-runtime
 	replaces = rocr-runtime
