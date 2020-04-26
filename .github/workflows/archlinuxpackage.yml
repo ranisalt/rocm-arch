@@ -36,13 +36,13 @@ jobs:
       continue-on-error: true
     - run: sh build.sh hsa-rocr
       continue-on-error: true
-    - run: sh build.sh llvm-roc
+    - run: sh build.sh llvm-amdgpu
       continue-on-error: true
     - run: sh build.sh rocm-cmake
       continue-on-error: true
     - run: sh build.sh rocm-device-libs
       continue-on-error: true
-    - run: sh build.sh rocm-comgr
+    - run: sh build.sh comgr
       continue-on-error: true
     - run: sh build.sh rocm-opencl-runtime
       continue-on-error: true

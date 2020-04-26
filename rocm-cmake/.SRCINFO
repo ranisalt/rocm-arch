@@ -7,7 +7,9 @@ pkgbase = rocm-cmake
 	license = MIT
 	makedepends = cmake
 	source = rocm-cmake-3.7.0.tar.gz::https://github.com/RadeonOpenCompute/rocm-cmake/archive/rocm-3.7.0.tar.gz
+	source = ROCMToolchain.cmake
 	sha256sums = 51abfb06124c2e0677c4d6f7fe83c22fe855cb21386f0053ace09f8ab297058b
+	sha256sums = SKIP
 
 pkgname = rocm-cmake
 

@@ -10,8 +10,10 @@ arch=('any')
 url='https://github.com/RadeonOpenCompute/rocm-cmake'
 license=('MIT')
 makedepends=('cmake')
-source=("${pkgname}-${pkgver}.tar.gz::$url/archive/rocm-$pkgver.tar.gz")
-sha256sums=('51abfb06124c2e0677c4d6f7fe83c22fe855cb21386f0053ace09f8ab297058b')
+source=("${pkgname}-${pkgver}.tar.gz::$url/archive/rocm-$pkgver.tar.gz"
+        'ROCMToolchain.cmake')
+sha256sums=('51abfb06124c2e0677c4d6f7fe83c22fe855cb21386f0053ace09f8ab297058b'
+            'c28f87fa878f9717b8fda6afb0786cf8463377a1a28e2981a45118c35b6ad4cd')
 _dirname="$(basename "$url")-$(basename "${source[0]}" .tar.gz)"
 
 build() {
@@ -20,5 +22,6 @@ build() {
 
 package() {
   make DESTDIR="$pkgdir" install
+  install -Dm644 -t "$pkgdir/opt/rocm/share/rocm/cmake" ROCMToolchain.cmake
   install -Dm644 "$_dirname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
